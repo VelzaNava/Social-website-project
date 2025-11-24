@@ -1,0 +1,57 @@
+/* Color Palette */
+:root{
+  --primary: #2b6777;
+  --accent:  #52ab98;
+  --soft:    #c8d8e4;
+  --bg:      #f2f2f2;
+  --white:   #ffffff;
+  --text:    #0f2430;
+}
+
+/* Reset */
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial, sans-serif;background:var(--bg);color:var(--text)}
+
+/* Header */
+.site-header{background:var(--white);border-bottom:1px solid #e0e4e7;position:sticky;top:0;z-index:10}
+.header-inner{display:flex;justify-content:space-between;align-items:center;padding:15px 0}
+.brand a{text-decoration:none;font-size:22px;font-weight:700;color:var(--primary)}
+.nav a{text-decoration:none;margin-left:18px;color:var(--primary);font-weight:600}
+.btn.small{padding:6px 12px;border-radius:6px}
+.btn.small.primary{background:var(--accent);color:var(--white)}
+
+/* Hero Section */
+.hero{padding:80px 0;background:var(--soft)}
+.hero-inner{display:flex;flex-wrap:wrap;justify-content:space-between;gap:30px}
+.hero-copy{max-width:500px}
+.hero-copy h1{font-size:42px;margin-bottom:10px;color:var(--primary)}
+.lead{font-size:18px;margin-bottom:20px}
+.cta .btn{padding:12px 22px;border-radius:8px;text-decoration:none;font-weight:700;margin-right:10px}
+.btn.primary{background:var(--primary);color:var(--white)}
+.btn.outline{border:2px solid var(--primary);color:var(--primary);background:transparent}
+
+/* Hero Cards */
+.card-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.card{background:var(--white);padding:16px;border-radius:10px;box-shadow:0 3px 12px rgba(0,0,0,0.08);font-weight:600}
+
+/* Features */
+.features{padding:50px 0}
+.features .container{display:flex;gap:20px;flex-wrap:wrap}
+.feature{flex:1;background:var(--white);padding:20px;border-radius:10px;box-shadow:0 3px 12px rgba(0,0,0,0.05)}
+
+/* Footer */
+.site-footer{text-align:center;padding:18px 0;background:var(--white);margin-top:50px;border-top:1px solid #e0e4e7}
+
+/* Forms shared (login/register) */
+.form-container{max-width:420px;background:var(--white);margin:40px auto;padding:22px;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,0.05)}
+input, textarea{width:100%;padding:12px;margin-top:10px;border:1px solid #cbd3d9;border-radius:8px}
+button{padding:12px 18px;background:var(--primary);color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer}
+
+/* Feed Post Cards */
+.post-card{display:flex;gap:12px;background:var(--white);padding:14px;border-radius:10px;margin-bottom:16px;box-shadow:0 4px 14px rgba(0,0,0,0.05)}
+.avatar{width:48px;height:48px;border-radius:50%;object-fit:cover}
+
+/* Responsive */
+@media (max-width:800px){
+  .hero-inner{flex-direction:column;text-align:center}
+}

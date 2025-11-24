@@ -4,11 +4,23 @@ require "config/database.php";
 
 $error = "";
 
+// AUTO DETECT DB CONNECTION VARIABLE
+$DB = $mysqli ?? $conn ?? null;
+
+if (!$DB) {
+    die("Database connection not found. Check database.php");
+}
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = $_POST["username"];
     $password = $_POST["password"];
 
-    $stmt = $mysqli->prepare("SELECT id, password_hash FROM users WHERE username=?");
+    $stmt = $DB->prepare("SELECT id, password_hash FROM users WHERE username=?");
+
+    if (!$stmt) {
+        die("Prepare failed: " . $DB->error);
+    }
+
     $stmt->bind_param("s", $username);
     $stmt->execute();
     $stmt->store_result();
@@ -20,14 +32,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION["user_id"] = $id;
             header("Location: feed.php");
             exit;
-        } else $error = "Incorrect password.";
-    } else $error = "User not found.";
+        } else {
+            $error = "Incorrect password.";
+        }
+    } else {
+        $error = "User not found.";
+    }
 }
 ?>
 <!DOCTYPE html>
 <html>
 <head>
-<title>Login • Mini Tumblr</title>
+<title>Login</title>
 <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
@@ -40,8 +56,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <?php endif; ?>
 
     <form method="POST">
-        <input type="text" name="username" placeholder="Username">
-        <input type="password" name="password" placeholder="Password">
+        <input type="text" name="username" placeholder="Username" required>
+        <input type="password" name="password" placeholder="Password" required>
         <button>Login</button>
     </form>
 

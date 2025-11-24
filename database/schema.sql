@@ -1,5 +1,5 @@
-CREATE DATABASE IF NOT EXISTS mini_social_b;
-USE mini_social_b;
+CREATE DATABASE IF NOT EXISTS Social_Sphere;
+USE Social_Sphere;
 
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
