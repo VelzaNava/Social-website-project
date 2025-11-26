@@ -12,6 +12,7 @@ if (!$DB) {
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
     $username = $_POST["username"];
     $password = $_POST["password"];
 
@@ -28,6 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if ($stmt->num_rows > 0) {
         $stmt->fetch();
+
         if (password_verify($password, $hash)) {
             $_SESSION["user_id"] = $id;
             header("Location: feed.php");
@@ -43,25 +45,55 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <!DOCTYPE html>
 <html>
 <head>
-<title>Login</title>
-<link rel="stylesheet" href="assets/css/style.css">
+    <title>Login</title>
+
+    <!-- Icons -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+    <!-- Updated CSS -->
+    <link rel="stylesheet" href="assets/css/login.css?v=3">
 </head>
+
 <body>
 
-<div class="form-container">
-    <h2>Sign in</h2>
+<div id="design" class="designs"></div>
+
+<div id="form" class="form-container">
 
     <?php if ($error): ?>
-    <p class="error"><?= $error ?></p>
+        <p class="error"><?= $error ?></p>
     <?php endif; ?>
 
     <form method="POST">
-        <input type="text" name="username" placeholder="Username" required>
-        <input type="password" name="password" placeholder="Password" required>
-        <button>Login</button>
+
+        <h2>Login</h2>
+
+        <div class="inputbox">
+            <input type="text" name="username" placeholder="Username" required>
+            <i class='bx bxs-user'></i>
+        </div>
+
+        <div class="inputbox">
+            <input type="password" name="password" placeholder="Password" required>
+            <i class='bx bxs-lock'></i>
+        </div>
+
+        <div class="ForgotPass">
+            <a href="#">Forgot Password?</a>
+        </div>
+
+        <!-- Login Button -->
+        <button type="submit" class="btn">Login</button>
+
+        <div class="register-link">
+            <p>
+                Don't have an account?
+                <a href="register.php">Register</a>
+            </p>
+        </div>
+
     </form>
 
-    <a class="small" href="register.php">Create account</a>
 </div>
 
 </body>

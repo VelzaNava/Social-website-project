@@ -28,7 +28,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $stmt->bind_param("ssss", $username, $first, $last, $password);
 
     if ($stmt->execute()) {
-        $success = "Account created. You may now login.";
+        // Redirect to login page after successful registration
+        header("Location: login.php");
+        exit();
     } else {
         $error = "Username already exists OR SQL error: " . $stmt->error;
     }
@@ -38,12 +40,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 <html>
 <head>
 <title>Register</title>
-<link rel="stylesheet" href="assets/css/style.css">
+
+<link rel="stylesheet" href="assets/css/register.css?v=2">
+
 </head>
 <body>
 
 <div class="form-container">
-    <h2>Create Account</h2>
 
     <?php if ($error): ?>
         <p class="error"><?= $error ?></p>
@@ -54,14 +57,40 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <?php endif; ?>
 
     <form method="POST">
-        <input name="username" placeholder="Username" required>
-        <input name="first_name" placeholder="First Name" required>
-        <input name="last_name" placeholder="Last Name" required>
-        <input type="password" name="password" placeholder="Password" required>
-        <button>Create Account</button>
+    <h2>Create Account</h2>
+        <div class = "registerinputbox">
+            <input name="username" 
+            placeholder="Username" 
+            required>
+        </div>
+
+        <div class = "registerinputbox">
+        <input name="first_name" 
+        placeholder="First Name" 
+        required>
+        </div>
+
+        <div class = "registerinputbox">
+        <input name="last_name" 
+        placeholder="Last Name" 
+        required>
+        </div>
+
+        <div class = "registerinputbox">
+        <input type="password" 
+        name="password" 
+        placeholder="Password" 
+        required>
+        </div>
+
+        <button type = "register" class="Regbutton"> Sign Up </button>
+
+        <div class = "accAlready">
+            <a href = "Index.php"> Back to Home </a>
+        </div>
+
     </form>
 
-    <a class="small" href="login.php">Back to login</a>
 </div>
 
 </body>

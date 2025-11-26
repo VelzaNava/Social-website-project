@@ -1,5 +1,3 @@
-<footer class="site-footer">
-  <div class="container">
-    <small>© <?= date('Y') ?> SocialSphere all rights reserved to LUMINE group</small>
-  </div>
+<footer class="site-footer glass-footer">
+  <small>© <?= date('Y') ?> SocialSphere — All rights reserved to LUMINE group</small>
 </footer>
