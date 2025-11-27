@@ -9,14 +9,17 @@ if (!isset($_SESSION["user_id"])) {
 
 $uid = $_SESSION["user_id"];
 
-// current user
-$user_query = $mysqli->query("SELECT username, profile_image FROM users WHERE id = $uid");
-$current_user = $user_query->fetch_assoc();
+// Current user info
+$stmt = $mysqli->prepare("SELECT username, profile_image FROM users WHERE id = ?");
+$stmt->bind_param("i", $uid);
+$stmt->execute();
+$result = $stmt->get_result();
+$current_user = $result->fetch_assoc();
 
-// users list
+// Other users
 $other_users_query = $mysqli->query("SELECT id, username, profile_image FROM users WHERE id != $uid");
 
-// gets the posts, like count, comment count ETO DIN WAG GALAWIN HAHA
+// Posts
 $post_query = $mysqli->query("
     SELECT posts.id AS post_id, posts.content, posts.image_path, posts.created_at,
            users.username, users.profile_image,
@@ -31,10 +34,10 @@ $post_query = $mysqli->query("
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>News Feed</title>
-    <link rel="stylesheet" href="assets/css/feed.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>News Feed</title>
+<link rel="stylesheet" href="assets/css/feed.css">
 </head>
 <body>
 
@@ -48,8 +51,7 @@ $post_query = $mysqli->query("
     <!-- LEFT SIDEBAR -->
     <div class="left-sidebar">
         <?php
-        $img = $current_user['profile_image'];
-        if (!file_exists($img)) $img = "assets/images/default.jpg";
+        $img = file_exists($current_user['profile_image']) ? $current_user['profile_image'] : "assets/images/default.jpg";
         ?>
         <img src="<?= $img ?>" class="profile-pic">
         <div class="username">@<?= htmlspecialchars($current_user["username"]) ?></div>
@@ -57,7 +59,6 @@ $post_query = $mysqli->query("
 
     <!-- MAIN CONTENT -->
     <div class="main-content">
-
         <!-- Create post -->
         <div class="post-form">
             <button id="openPostModal" class="open-post-btn">Create Post</button>
@@ -68,14 +69,11 @@ $post_query = $mysqli->query("
             <?php while ($p = $post_query->fetch_assoc()): ?>
             <div class="post-card">
 
-                <!-- Avatar -->
                 <?php
-                $avatar = $p["profile_image"];
-                if (!file_exists($avatar)) $avatar = "assets/images/default.jpg";
+                $avatar = file_exists($p["profile_image"]) ? $p["profile_image"] : "assets/images/default.jpg";
                 ?>
                 <img src="<?= $avatar ?>" class="avatar">
 
-                <!-- Post content -->
                 <div class="post-content">
                     <strong>@<?= htmlspecialchars($p["username"]) ?></strong><br>
                     <small><?= $p["created_at"] ?></small><br><br>
@@ -101,7 +99,6 @@ $post_query = $mysqli->query("
                     <div class="comment-section">
                         <strong><?= $p["comment_count"] ?> Comments</strong>
 
-                        <!-- kukuha ng comments -->
                         <?php
                         $cid = $p["post_id"];
                         $comments = $mysqli->query("
@@ -121,7 +118,6 @@ $post_query = $mysqli->query("
                             </div>
                         <?php endwhile; ?>
 
-                        <!-- Add new comment -->
                         <form action="comment_post.php" method="POST" class="comment-form">
                             <input type="hidden" name="post_id" value="<?= $p["post_id"] ?>">
                             <input type="text" name="comment" placeholder="Write a comment..." required>
@@ -140,12 +136,11 @@ $post_query = $mysqli->query("
         <h3>Other Users</h3>
         <?php while ($u = $other_users_query->fetch_assoc()): ?>
             <?php
-            $uimg = $u["profile_image"];
-            if (!file_exists($uimg)) $uimg = "assets/images/default.jpg";
+            $uimg = file_exists($u["profile_image"]) ? $u["profile_image"] : "assets/images/default.jpg";
             ?>
-            <a href="profile.php?user_id=<?= $u["id"] ?>" class="user-item">
+            <a href="view_profile.php?user_id=<?= $u["id"] ?>" class="user-item">
                 <img src="<?= $uimg ?>" alt="avatar">
-                <span>@<?= $u["username"] ?></span>
+                <span>@<?= htmlspecialchars($u["username"]) ?></span>
             </a>
         <?php endwhile; ?>
     </div>
@@ -159,15 +154,11 @@ $post_query = $mysqli->query("
         <h2>Create a Post</h2>
 
         <form action="create_post.php" method="POST" enctype="multipart/form-data">
-
             <textarea name="content" placeholder="Write something..." required></textarea>
-
             <div id="dropArea" class="drop-area">
                 Drag & Drop Image Here or Click Below
             </div>
-
             <input type="file" id="imageInput" name="image" accept="image/*">
-
             <button type="submit">Post</button>
         </form>
     </div>
@@ -175,6 +166,5 @@ $post_query = $mysqli->query("
 
 <script src="assets/js/feed.js"></script>
 <script src="assets/js/secret.js"></script>
-
 </body>
 </html>
