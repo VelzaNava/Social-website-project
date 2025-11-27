@@ -1,6 +1,6 @@
 <?php
 session_start();
-require "config\database.php";
+require "config/database.php";
 
 if (!isset($_SESSION["user_id"])) header("Location: login.php");
 
@@ -11,12 +11,16 @@ $stmt->bind_param("i", $id);
 $stmt->execute();
 $stmt->bind_result($username, $first, $last, $image);
 $stmt->fetch();
+
+if (empty($image)) {
+    $image = "assets/images/default.jpg";
+}
 ?>
 <!DOCTYPE html>
 <html>
 <head>
-<title>My Profile</title>
-<link rel="stylesheet" href="assets/css/style.css">
+    <title>My Profile</title>
+    <link rel="stylesheet" href="assets/css/profile.css">
 </head>
 <body>
 
@@ -26,9 +30,15 @@ $stmt->fetch();
 </div>
 
 <div class="profile-box">
-    <img src="<?= $image ?>" class="profile-img">
-    <h2>@<?= $username ?></h2>
-    <p><?= $first ?> <?= $last ?></p>
+    <img src="<?= htmlspecialchars($image) ?>" class="profile-img">
+
+    <h2>@<?= htmlspecialchars($username) ?></h2>
+    <p><?= htmlspecialchars($first) ?> <?= htmlspecialchars($last) ?></p>
+
+    <form action="upload_profile_image.php" method="POST" enctype="multipart/form-data">
+        <input type="file" name="profile_image" accept="image/*">
+        <button type="submit">Upload New Image</button>
+    </form>
 </div>
 
 </body>

@@ -1,63 +1,100 @@
+    <?php
+    session_start();
+    require "config/database.php";
 
-<?php
-// Still working in progress//
-session_start();
-require "config\database.php";
+    if (!isset($_SESSION["user_id"])) header("Location: login.php");
 
-if (!isset($_SESSION["user_id"])) header("Location: login.php");
+    $id = $_SESSION["user_id"];
 
-$id = $_SESSION["user_id"];
+    // Load current user info
+    $stmt = $mysqli->prepare("SELECT username, first_name, last_name, profile_image FROM users WHERE id=?");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $stmt->bind_result($username, $first, $last, $image);
+    $stmt->fetch();
+    $stmt->close();
 
-$stmt = $mysqli->prepare("SELECT username, first_name, last_name, profile_image FROM users WHERE id=?");
-$stmt->bind_param("i", $id);
-$stmt->execute();
-$stmt->bind_result($username, $first, $last, $image);
-$stmt->fetch();
+        // If user submitted the form
+    if ($_SERVER["REQUEST_METHOD"] === "POST") {
+        $new_username = $_POST["username"];
+        $new_first = $_POST["first_name"];
+        $new_last = $_POST["last_name"];
 
+        // Check if username is taken by another user
+        $check = $mysqli->prepare("SELECT id FROM users WHERE username=? AND id!=?");
+        $check->bind_param("si", $new_username, $id);
+        $check->execute();
+        $check->store_result();
 
-    if ($stmt->execute()) {
-        $success = "Account Updated.";
-    } else {
-        $error = "Username already exists.";
+        if ($check->num_rows > 0) {
+        $error = "Username is already taken.";
+         } else {
+        // If user uploaded a new image
+        if (!empty($_FILES["profile_image"]["name"])) {
+            $image_name = "uploads/" . time() . "_" . basename($_FILES["profile_image"]["name"]);
+            move_uploaded_file($_FILES["profile_image"]["tmp_name"], $image_name);
+
+            $stmt = $mysqli->prepare("UPDATE users SET username=?, first_name=?, last_name=?, profile_image=? WHERE id=?");
+            $stmt->bind_param("ssssi", $new_username, $new_first, $new_last, $image_name, $id);
+        } else {
+            // No new image uploaded
+            $stmt = $mysqli->prepare("UPDATE users SET username=?, first_name=?, last_name=? WHERE id=?");
+            $stmt->bind_param("sssi", $new_username, $new_first, $new_last, $id);
+        }
+    
+
+        $stmt->execute();
+        header("Location: profile.php");
+        exit();
     }
+}
 
-?>
-<!DOCTYPE html>
-<html>
-<head>
-<title>Edit Profile</title>
-<link rel="stylesheet" href="assets/css/style.css">
-</head>
-<body>
-<div class="form-container">
-    <h2>Edit Profile Account</h2>
-<form action="Update_profile.php" method="POST" >
+    ?>
+    <!DOCTYPE html>
+    <html>
+    <head>
+    <title>Edit Profile</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    </head>
+    <body>
+        
+    <div class="top-bar">
+        <a href="feed.php">Feed</a>
+        <a href="logout.php">Logout</a>
+    </div>
+
+    <h1>Edit Profile</h1>
+    <div class="form-container">
 
 
-    <label>Username:</label><br>
-    <input name="username" value="<?= $user['username'] ?>" ><br><br>
-    <label>First Name:</label><br>
-    <input name="first_name" value="<?= $user['first_name'] ?>" ><br><br>
-    <label>Last Name:</label><br>
-    <input name="last_name" value="<?= $user['last_name'] ?>" ><br><br>
-    <label>Current Profile Picture:</label><br>
-    <img src="uploads/<?= $user['profile_image'] ?>" width="120"><br><br>
-    <label>Upload New Profile Picture:</label><br>
-    <input type="file" name="profile_image"><br><br>
-    <button type="submit">Save Changes</button>
-</form>
-    <a class="small" href="profile.php"> Back to Profile </a>
-</div>
-<div class="top-bar">
-    <a href="feed.php">Feed</a>
-    <a href="logout.php">Logout</a>
-</div>
+        <form method="POST">
+            <!-- CURRENT PROFILE PHOTO -->
+            <img src="<?= $image ?>" width="120" height="120"><br><br>
 
-<div class="profile-box">
-    <img src="<?= $image ?>" class="profile-img">
-    <h2>@<?= $username ?></h2>
-    <p><?= $first ?> <?= $last ?></p>
-</div>
+            <div class = "EditProfile_inputbox">
+                <label>Change Photo:</label><br>
+                <input type="file" name="profile_image">
 
-</body>
-</html>
+            </div>
+
+            <!-- USERNAME -->
+            <div class = "EditProfile_inputbox">
+                <input type="text" name="username" placeholder="Username" value="<?= $username ?>" required>
+            </div>
+
+            <!-- FIRST NAME -->
+            <div class = "EditProfile_inputbox">
+                <input type="text" name="first_name" placeholder="Fiest Name" value="<?= $first ?>" required>
+            </div>
+
+            <!-- LAST NAME -->
+            <div class = "EditProfile_inputbox">
+                <input type="text" name="last_name" placeholder="Last Name" value="<?= $last ?>" required>
+            </div>
+
+            <button type="submit">Save Changes</button>
+        </form>
+    </div>
+
+    </body>
+    </html>
