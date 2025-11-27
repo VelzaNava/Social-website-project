@@ -9,7 +9,7 @@ if (!isset($_SESSION["user_id"])) {
 
 $uid = $_SESSION["user_id"];
 
-// Fetch current user data
+// get current user data
 $user_query = $mysqli->query("SELECT username, profile_image FROM users WHERE id = $uid");
 if (!$user_query) {
     die("Database error: " . $mysqli->error);
@@ -26,7 +26,7 @@ if (!$other_users_query) {
     die("Database error: " . $mysqli->error);
 }
 
-// Fetch posts
+// get posts
 $post_query = $mysqli->query("
     SELECT posts.content, posts.created_at, users.username, users.profile_image
     FROM posts
@@ -66,13 +66,14 @@ if (!$post_query) {
 
         <!-- Main Content Area: Feed -->
         <div class="main-content">
+
+            <!-- Replace old form button with modal trigger -->
             <div class="post-form">
-                <form action="create_post.php" method="POST">
-                    <textarea name="content" placeholder="What's on your mind?" required></textarea>
-                    <button type="submit">Post</button>
-                </form>
+                <button id="openPostModal" class="open-post-btn">Create Post</button>
             </div>
 
+
+            <!-- FEED LIST -->
             <div class="feed">
                 <?php while ($p = $post_query->fetch_assoc()): ?>
                 <div class="post-card">
@@ -110,5 +111,31 @@ if (!$post_query) {
             <?php endwhile; ?>
         </div>
     </div>
+
+
+    <!-- 🔹 POST MODAL POPUP -->
+    <div id="postModal" class="modal">
+        <div class="modal-content">
+
+            <span class="close-modal">&times;</span>
+
+            <h2>What do you want to post?</h2>
+
+            <form action="create_post.php" method="POST" enctype="multipart/form-data">
+
+                <textarea name="content" class="modal-textarea" placeholder="Write something..." required></textarea>
+
+                <div id="dropArea" class="drop-area">
+                    Drag & Drop image here or click below
+                </div>
+
+                <input type="file" id="imageInput" name="image" accept="image/*">
+
+                <button class="submit-post" type="submit">Post</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="assets/js/feed.js"></script>
 </body>
 </html>
