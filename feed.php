@@ -115,7 +115,7 @@ $post_query = $mysqli->query("
 
                         <?php while ($c = $comments->fetch_assoc()): ?>
                             <div class="comment-item">
-                                <strong>@<?= $c["username"] ?></strong>:
+                                <strong>@<?= htmlspecialchars($c["username"]) ?></strong>:
                                 <?= htmlspecialchars($c["comment"]) ?>
                                 <br><small><?= $c["created_at"] ?></small>
                             </div>
