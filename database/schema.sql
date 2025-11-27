@@ -1,18 +1,16 @@
 CREATE DATABASE IF NOT EXISTS Social_Sphere;
 USE Social_Sphere;
 
--- USERS TABLE
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(100) UNIQUE NOT NULL,
     first_name VARCHAR(100),
     last_name VARCHAR(100),
     password_hash VARCHAR(255) NOT NULL,
-    profile_image VARCHAR(255) DEFAULT 'assets/images/default.png',
+    profile_image VARCHAR(255) DEFAULT 'assets/images/default.jpg',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- POSTS TABLE
 CREATE TABLE IF NOT EXISTS posts (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
@@ -22,7 +20,6 @@ CREATE TABLE IF NOT EXISTS posts (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
--- COMMENTS TABLE
 CREATE TABLE IF NOT EXISTS comments (
     id INT AUTO_INCREMENT PRIMARY KEY,
     post_id INT NOT NULL,
@@ -33,7 +30,6 @@ CREATE TABLE IF NOT EXISTS comments (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
--- LIKES TABLE
 CREATE TABLE IF NOT EXISTS likes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     post_id INT NOT NULL,

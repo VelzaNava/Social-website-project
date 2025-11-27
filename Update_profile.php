@@ -1,53 +1,52 @@
 <?php
-// Still working in progress//
 session_start();
-require "config\database.php";
+require "config/database.php";
 
-if (!isset($_SESSION["user_id"])) header("Location: login.php");
+if (!isset($_SESSION["user_id"])) {
+    header("Location: login.php");
+    exit;
+}
 
-$id = $_SESSION["user_id"];
+if (!isset($_FILES['profile_image']) || $_FILES['profile_image']['error'] !== UPLOAD_ERR_OK) {
+    // handle error — redirect or show message
+    header("Location: profile.php");
+    exit;
+}
 
-$stmt = $mysqli->prepare("SELECT username, first_name, last_name, profile_image FROM users WHERE id=?");
-$stmt->bind_param("i", $id);
+// Validate file type (allow only images)
+$allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+if (!in_array($_FILES['profile_image']['type'], $allowedTypes)) {
+    // invalid file type
+    header("Location: profile.php");
+    exit;
+}
+
+// Prepare destination folder
+$uploadDir = __DIR__ . '/assets/uploads/';
+if (!is_dir($uploadDir)) {
+    mkdir($uploadDir, 0755, true);
+}
+
+// Generate a unique file name
+$ext = pathinfo($_FILES['profile_image']['name'], PATHINFO_EXTENSION);
+$newFilename = 'pfp_' . $_SESSION["user_id"] . '_' . time() . '.' . $ext;
+$destination = $uploadDir . $newFilename;
+
+// Move uploaded file
+if (!move_uploaded_file($_FILES['profile_image']['tmp_name'], $destination)) {
+    // error
+    header("Location: profile.php");
+    exit;
+}
+
+// Build path to store in DB (web-accessible path)
+$imagePath = '/assets/uploads/' . $newFilename;
+
+// Update database
+$stmt = $mysqli->prepare("UPDATE users SET profile_image = ? WHERE id = ?");
+$stmt->bind_param("si", $imagePath, $_SESSION["user_id"]);
 $stmt->execute();
-$stmt->bind_result($username, $first, $last, $image);
-$stmt->fetch();
-?>
-<!DOCTYPE html>
-<html>
-<head>
-<title>Edit Profile</title>
-<link rel="stylesheet" href="assets/css/style.css">
-</head>
-<body>
-<div class="form-container">
-    <h2>Edit Profile Account</h2>
-<form method="POST" >
+$stmt->close();
 
-    <label>Username:</label><br>
-    <input name="username" value="<?= $user['username'] ?>" ><br><br>
-    <label>First Name:</label><br>
-    <input name="first_name" value="<?= $user['first_name'] ?>" ><br><br>
-    <label>Last Name:</label><br>
-    <input name="last_name" value="<?= $user['last_name'] ?>" ><br><br>
-    <label>Current Profile Picture:</label><br>
-    <img src="uploads/<?= $user['profile_image'] ?>" width="120"><br><br>
-    <label>Upload New Profile Picture:</label><br>
-    <input type="file" name="profile_image"><br><br>
-    <button type="submit">Save Changes</button>
-</form>
-    <a class="small" href="profile.php"> Back to Profile </a>
-</div>
-<div class="top-bar">
-    <a href="feed.php">Feed</a>
-    <a href="logout.php">Logout</a>
-</div>
-
-<div class="profile-box">
-    <img src="<?= $image ?>" class="profile-img">
-    <h2>@<?= $username ?></h2>
-    <p><?= $first ?> <?= $last ?></p>
-</div>
-
-</body>
-</html>
+header("Location: profile.php");
+exit;
