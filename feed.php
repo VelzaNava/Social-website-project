@@ -26,9 +26,9 @@ if (!$other_users_query) {
     die("Database error: " . $mysqli->error);
 }
 
-// get posts
+// get posts — updated to include image_path
 $post_query = $mysqli->query("
-    SELECT posts.content, posts.created_at, users.username, users.profile_image
+    SELECT posts.content, posts.image_path, posts.created_at, users.username, users.profile_image
     FROM posts
     JOIN users ON posts.user_id = users.id
     ORDER BY posts.id DESC
@@ -72,27 +72,32 @@ if (!$post_query) {
                 <button id="openPostModal" class="open-post-btn">Create Post</button>
             </div>
 
+<div class="feed">
+    <?php while ($p = $post_query->fetch_assoc()): ?>
+    <div class="post-card">
+        <?php
+        $avatar_img = htmlspecialchars($p['profile_image']);
+        if (empty($avatar_img) || !file_exists($_SERVER['DOCUMENT_ROOT'] . '/Social_Sphere/' . $avatar_img)) {
+            $avatar_img = 'assets/images/default.jpg';
+        }
+        ?>
+        <img src="<?= $avatar_img ?>" alt="Avatar" class="avatar">
 
-            <!-- FEED LIST -->
-            <div class="feed">
-                <?php while ($p = $post_query->fetch_assoc()): ?>
-                <div class="post-card">
-                    <?php
-                    $avatar_img = htmlspecialchars($p['profile_image']);
-                    if (empty($avatar_img) || !file_exists($_SERVER['DOCUMENT_ROOT'] . '/Social_Sphere/' . $avatar_img)) {
-                        $avatar_img = 'assets/images/default.jpg';
-                    }
-                    ?>
-                    <img src="<?= $avatar_img ?>" alt="Avatar" class="avatar">
-                    <div class="post-content">
-                        <strong>@<?= htmlspecialchars($p['username']) ?></strong><br>
-                        <span><?= htmlspecialchars($p['content']) ?></span><br>
-                        <small><?= htmlspecialchars($p['created_at']) ?></small>
-                    </div>
+        <div class="post-content">
+            <strong>@<?= htmlspecialchars($p['username']) ?></strong><br>
+            <small><?= htmlspecialchars($p['created_at']) ?></small><br><br>
+
+            <span><?= nl2br(htmlspecialchars($p['content'])) ?></span>
+
+            <?php if (!empty($p['image_path']) && file_exists($p['image_path'])): ?>
+                <div class="post-image-wrapper">
+                    <img src="<?= htmlspecialchars($p['image_path']) ?>" alt="Post image" class="post-image">
                 </div>
-                <?php endwhile; ?>
-            </div>
+            <?php endif; ?>
         </div>
+    </div>
+    <?php endwhile; ?>
+</div>
 
         <!-- Right Sidebar: Other Users -->
         <div class="right-sidebar">
