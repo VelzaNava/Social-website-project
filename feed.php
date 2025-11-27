@@ -16,7 +16,7 @@ $current_user = $user_query->fetch_assoc();
 // users list
 $other_users_query = $mysqli->query("SELECT id, username, profile_image FROM users WHERE id != $uid");
 
-// Fetch posts + like count + comment count
+// gets the posts, like count, comment count ETO DIN WAG GALAWIN HAHA
 $post_query = $mysqli->query("
     SELECT posts.id AS post_id, posts.content, posts.image_path, posts.created_at,
            users.username, users.profile_image,
@@ -101,7 +101,7 @@ $post_query = $mysqli->query("
                     <div class="comment-section">
                         <strong><?= $p["comment_count"] ?> Comments</strong>
 
-                        <!-- Fetch comments -->
+                        <!-- kukuha ng comments -->
                         <?php
                         $cid = $p["post_id"];
                         $comments = $mysqli->query("
@@ -174,5 +174,7 @@ $post_query = $mysqli->query("
 </div>
 
 <script src="assets/js/feed.js"></script>
+<script src="assets/js/secret.js"></script>
+
 </body>
 </html>

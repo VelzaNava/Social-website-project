@@ -89,6 +89,7 @@ if (empty($profile_image) || !file_exists($profile_image)) {
 </div>
 
 <script src="assets/js/profile_modal.js"></script>
+<script src="assets/js/secret.js"></script>
 
 </body>
 </html>

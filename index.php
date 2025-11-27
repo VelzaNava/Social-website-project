@@ -13,8 +13,6 @@ session_start();
 </head>
 <body>
 
-<?php require_once __DIR__ . '/includes/header.php'; ?>
-
 <main class="page-center">
   <div class="form-container">
     <h2>Welcome to SocialSphere</h2>
@@ -27,7 +25,10 @@ session_start();
   </div>
 </main>
 
-<?php require_once __DIR__ . '/includes/footer.php'; ?>
+<?php require_once 'includes/footer.php'; 
+?>
+
+<script src="assets/js/secret.js"></script>
 
 </body>
 </html>

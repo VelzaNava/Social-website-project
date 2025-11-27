@@ -11,7 +11,7 @@ $uid = $_SESSION["user_id"];
 $content = trim($_POST["content"] ?? "");
 $image_path = null;
 
-// ensure the uploads folder exists
+// tagagawa ng polder for post
 $uploadDir = "uploads/posts/";
 if (!is_dir($uploadDir)) {
     mkdir($uploadDir, 0777, true);

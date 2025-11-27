@@ -14,13 +14,13 @@
     $stmt->fetch();
     $stmt->close();
 
-        // If user submitted the form
+        // If submitted the form
     if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $new_username = $_POST["username"];
         $new_first = $_POST["first_name"];
         $new_last = $_POST["last_name"];
 
-        // Check if username is taken by another user
+        // Check if  its taken by another user :((
         $check = $mysqli->prepare("SELECT id FROM users WHERE username=? AND id!=?");
         $check->bind_param("si", $new_username, $id);
         $check->execute();
@@ -29,7 +29,7 @@
         if ($check->num_rows > 0) {
         $error = "Username is already taken.";
          } else {
-        // If user uploaded a new image
+        // If uploaded a new image
         if (!empty($_FILES["profile_image"]["name"])) {
             $image_name = "uploads/" . time() . "_" . basename($_FILES["profile_image"]["name"]);
             move_uploaded_file($_FILES["profile_image"]["tmp_name"], $image_name);
@@ -77,17 +77,17 @@
 
             </div>
 
-            <!-- USERNAME -->
+            <!-- USER -->
             <div class = "EditProfile_inputbox">
                 <input type="text" name="username" placeholder="Username" value="<?= $username ?>" required>
             </div>
 
-            <!-- FIRST NAME -->
+            <!-- FN -->
             <div class = "EditProfile_inputbox">
                 <input type="text" name="first_name" placeholder="Fiest Name" value="<?= $first ?>" required>
             </div>
 
-            <!-- LAST NAME -->
+            <!-- LN -->
             <div class = "EditProfile_inputbox">
                 <input type="text" name="last_name" placeholder="Last Name" value="<?= $last ?>" required>
             </div>
