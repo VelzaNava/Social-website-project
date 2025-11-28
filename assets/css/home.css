@@ -199,11 +199,12 @@ body {
 }
 
 .feature {
-  flex: 1;
   background: var(--white);
+  flex: 1 1 calc(33% - 20px);
   padding: 20px;
   border-radius: 10px;
-  box-shadow: 0 3px 12px rgba(0,0,0,0.05);
+  box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+  text-align: center;
 }
 
 /* Feed Cards */
